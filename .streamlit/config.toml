@@ -1,0 +1,72 @@
+# Tema "Finanzas Personales" — dashboard financiero profesional (oscuro)
+[theme]
+base = "dark"
+primaryColor = "#3B82F6"
+backgroundColor = "#0B1120"
+secondaryBackgroundColor = "#161F32"
+codeBackgroundColor = "#161F32"
+textColor = "#E2E8F0"
+linkColor = "#60A5FA"
+borderColor = "#283449"
+codeTextColor = "#CBD5E1"
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "10px"
+buttonRadius = "8px"
+
+font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+baseFontSize = 14
+baseFontWeight = 400
+headingFontSizes = ["26px", "21px", "17px", "15px", "14px", "13px"]
+headingFontWeights = [700, 600, 600, 600, 500, 500]
+linkUnderline = false
+
+# Semántica: verde = ingreso/positivo, rojo = egreso/negativo
+greenColor = "#34D399"
+greenBackgroundColor = "#0F2E23"
+greenTextColor = "#6EE7B7"
+redColor = "#F87171"
+redBackgroundColor = "#3A1518"
+redTextColor = "#FCA5A5"
+yellowColor = "#FBBF24"
+orangeColor = "#FB923C"
+blueColor = "#60A5FA"
+violetColor = "#A78BFA"
+grayColor = "#94A3B8"
+
+chartCategoricalColors = [
+    "#3B82F6",
+    "#34D399",
+    "#A78BFA",
+    "#FBBF24",
+    "#F87171",
+    "#38BDF8",
+    "#FB923C",
+    "#94A3B8",
+]
+
+chartSequentialColors = [
+    "#0C1E3D",
+    "#0F2A57",
+    "#123669",
+    "#15468A",
+    "#1D5CB3",
+    "#2E75D6",
+    "#5C97E6",
+    "#8FBBEF",
+    "#C2DAF7",
+    "#EAF2FC",
+]
+
+dataframeBorderColor = "#283449"
+dataframeHeaderBackgroundColor = "#161F32"
+
+[theme.sidebar]
+backgroundColor = "#080D1A"
+secondaryBackgroundColor = "#161F32"
+codeBackgroundColor = "#161F32"
+textColor = "#E2E8F0"
+borderColor = "#283449"
+primaryColor = "#3B82F6"
