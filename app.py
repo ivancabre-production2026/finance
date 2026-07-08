@@ -23,6 +23,7 @@ page = st.navigation(
         st.Page("app_pages/cuentas.py", title="Cuentas", icon=":material/account_balance_wallet:", default=True),
         st.Page("app_pages/movimientos.py", title="Movimientos", icon=":material/receipt_long:"),
         st.Page("app_pages/diario.py", title="Diario", icon=":material/edit_note:"),
+        st.Page("app_pages/asistente.py", title="Asistente", icon=":material/smart_toy:"),
         st.Page("app_pages/config.py", title="Config", icon=":material/settings:"),
     ],
     position="sidebar",
