@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 import diario_store
-from ui import fmt_df, load_data
+from ui import fmt, load_data
 
 st.title("Diario")
 st.caption("Registrá cada movimiento apenas suceda")
@@ -46,13 +46,19 @@ st.subheader("Últimos movimientos")
 diario = diario_store.load()
 if diario:
     df = pd.DataFrame(diario).sort_values(["fecha", "id"], ascending=[False, False])
-    df_view = df[["id", "fecha", "tipo", "concepto", "cuenta", "moneda", "monto", "nota"]]
-    df_view = fmt_df(df_view, ["monto"])
+    df_view = df[["id", "fecha", "tipo", "concepto", "cuenta", "moneda", "monto", "nota"]].copy()
+    df_view["monto"] = df_view["monto"].apply(fmt)
     df_view = df_view.rename(columns={
         "id": "ID", "fecha": "Fecha", "tipo": "Tipo", "concepto": "Concepto",
         "cuenta": "Cuenta", "moneda": "Moneda", "monto": "Monto", "nota": "Nota",
     })
-    st.dataframe(df_view, hide_index=True, width="stretch")
+
+    def _color_tipo(row):
+        color = "#6EE7B7" if row["Tipo"] == "ingreso" else "#FCA5A5"
+        return [f"color: {color}"] * len(row)
+
+    styled = df_view.style.apply(_color_tipo, axis=1)
+    st.dataframe(styled, hide_index=True, width="stretch")
 
     with st.expander("Borrar un movimiento", icon=":material/delete:"):
         id_borrar = st.number_input("ID a borrar", min_value=1, step=1)
