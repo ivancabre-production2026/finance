@@ -91,6 +91,13 @@ _SEED = {
         "Ingreso Jaime",
         "Ingreso Alquiler Frías",
     ],
+    # Cuentas que son inversión (no liquidez disponible), para separar el patrimonio en Cuentas.
+    "cuentas_inversion": [
+        "Balanz",
+        "DolarApp Invertido",
+        "Galicia",
+        "Plazo Fijo Galicia",
+    ],
 }
 
 
@@ -111,6 +118,9 @@ def load() -> dict:
         dirty = True
     if "ingresos_fijos" not in config:
         config["ingresos_fijos"] = [c for c in _SEED["ingresos_fijos"] if c in config.get("ingresos", [])]
+        dirty = True
+    if "cuentas_inversion" not in config:
+        config["cuentas_inversion"] = [c for c in _SEED["cuentas_inversion"] if c in config.get("cuentas", [])]
         dirty = True
     if dirty:
         save(config)

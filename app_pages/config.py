@@ -51,15 +51,26 @@ with c5:
             key="fijos", label_visibility="collapsed",
         )
 
+with st.container(border=True):
+    st.markdown("**:material/savings: Cuentas de inversión**")
+    st.caption("En Cuentas, separan tu patrimonio en \"Disponible\" vs \"Invertido\" por moneda.")
+    cuentas_inversion_seleccionadas = st.multiselect(
+        "Cuentas de inversión", config["cuentas"],
+        default=[c for c in config.get("cuentas_inversion", []) if c in config["cuentas"]],
+        key="cuentas_inversion", label_visibility="collapsed",
+    )
+
 if st.button("Guardar config", type="primary", icon=":material/save:"):
     ingresos_lista = [l.strip() for l in ingresos_txt.splitlines() if l.strip()]
     egresos_lista = [l.strip() for l in egresos_txt.splitlines() if l.strip()]
+    cuentas_lista = [l.strip() for l in cuentas_txt.splitlines() if l.strip()]
     nuevo_config = {
         "ingresos": ingresos_lista,
         "egresos": egresos_lista,
-        "cuentas": [l.strip() for l in cuentas_txt.splitlines() if l.strip()],
+        "cuentas": cuentas_lista,
         "fijos": [f for f in fijos_seleccionados if f in egresos_lista],
         "ingresos_fijos": [f for f in ingresos_fijos_seleccionados if f in ingresos_lista],
+        "cuentas_inversion": [c for c in cuentas_inversion_seleccionadas if c in cuentas_lista],
     }
     config_store.save(nuevo_config)
     st.toast("Config guardada", icon=":material/check_circle:")

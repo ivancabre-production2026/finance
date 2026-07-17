@@ -46,6 +46,17 @@ if saldos.empty:
     st.info("Todavía no hay movimientos cargados. Cargá el primero desde Diario.", icon=":material/info:")
     st.stop()
 
+cuentas_inversion = config.get("cuentas_inversion", [])
+es_inversion = saldos["cuenta"].isin(cuentas_inversion)
+
+with st.container(horizontal=True):
+    for moneda in ("ARS", "USD"):
+        en_moneda = saldos["moneda"] == moneda
+        disponible = saldos.loc[en_moneda & ~es_inversion, "saldo"].sum()
+        invertido = saldos.loc[en_moneda & es_inversion, "saldo"].sum()
+        st.metric(f"Disponible ({moneda})", fmt_money(disponible, moneda), border=True)
+        st.metric(f"Invertido ({moneda})", fmt_money(invertido, moneda), border=True)
+
 col_ars, col_usd = st.columns(2)
 with col_ars:
     with st.container(border=True):
@@ -67,7 +78,9 @@ with col_usd:
 
 with st.container(border=True):
     st.markdown("**:material/table_chart: Detalle por cuenta**")
-    detalle = saldos.sort_values(["moneda", "saldo"], ascending=[True, False])
+    detalle = saldos.sort_values(["moneda", "saldo"], ascending=[True, False]).copy()
+    detalle["tipo"] = detalle["cuenta"].isin(cuentas_inversion).map({True: "Invertido", False: "Disponible"})
     detalle = fmt_df(detalle, ["saldo"])
-    detalle = detalle.rename(columns={"cuenta": "Cuenta", "moneda": "Moneda", "saldo": "Saldo"})
+    detalle = detalle.rename(columns={"cuenta": "Cuenta", "moneda": "Moneda", "saldo": "Saldo", "tipo": "Tipo"})
+    detalle = detalle[["Cuenta", "Moneda", "Saldo", "Tipo"]]
     st.dataframe(detalle, hide_index=True, width="stretch")
