@@ -72,6 +72,20 @@ def conceptos_fijos_mes(entries: list, conceptos: list, tipo: str, anio: int, me
     return pd.DataFrame(filas, columns=["concepto", "ARS", "USD", "pagado"])
 
 
+def patrimonio_evolucion(entries: list, moneda: str) -> list[float]:
+    """Patrimonio total (todas las cuentas) al cierre de cada mes, para una moneda. Para sparklines."""
+    df = _df(entries)
+    if df.empty:
+        return []
+    df = df[df["moneda"] == moneda]
+    if df.empty:
+        return []
+    signo = df["tipo"].map({"ingreso": 1, "egreso": -1})
+    df = df.assign(monto_signed=df["monto"] * signo, periodo=df["fecha"].dt.to_period("M"))
+    por_mes = df.groupby("periodo")["monto_signed"].sum().sort_index()
+    return por_mes.cumsum().tolist()
+
+
 def flujo_mensual(entries: list) -> pd.DataFrame:
     """Ingresos vs egresos reales totales por mes y moneda (sin saldo inicial), para ver la evolución."""
     df = _sin_saldo_inicial(_df(entries))

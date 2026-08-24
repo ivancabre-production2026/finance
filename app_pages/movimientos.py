@@ -26,11 +26,19 @@ total_ing_usd = ingresos["USD"].sum() if not ingresos.empty else 0.0
 total_egr_ars = egresos["ARS"].sum() if not egresos.empty else 0.0
 total_egr_usd = egresos["USD"].sum() if not egresos.empty else 0.0
 
-with st.container(horizontal=True):
-    st.metric("Ingresos ARS", f"$ {fmt(total_ing_ars)}", border=True)
-    st.metric("Ingresos USD", f"US$ {fmt(total_ing_usd)}", border=True)
-    st.metric("Egresos ARS", f"$ {fmt(total_egr_ars)}", border=True)
-    st.metric("Egresos USD", f"US$ {fmt(total_egr_usd)}", border=True)
+col_ars, col_usd = st.columns(2)
+with col_ars:
+    with st.container(border=True):
+        st.caption(":blue[**● Pesos (ARS)**]")
+        with st.container(horizontal=True):
+            st.metric(":material/trending_up: Ingresos", f"$ {fmt(total_ing_ars)}")
+            st.metric(":material/trending_down: Egresos", f"$ {fmt(total_egr_ars)}")
+with col_usd:
+    with st.container(border=True):
+        st.caption(":green[**● Dólares (USD)**]")
+        with st.container(horizontal=True):
+            st.metric(":material/trending_up: Ingresos", f"US$ {fmt(total_ing_usd)}")
+            st.metric(":material/trending_down: Egresos", f"US$ {fmt(total_egr_usd)}")
 
 def _color_estado(row):
     if row["pagado"]:

@@ -37,10 +37,34 @@ total_ars = saldos.loc[saldos["moneda"] == "ARS", "saldo"].sum() if not saldos.e
 total_usd = saldos.loc[saldos["moneda"] == "USD", "saldo"].sum() if not saldos.empty else 0.0
 n_cuentas = saldos["cuenta"].nunique() if not saldos.empty else 0
 
-with st.container(horizontal=True):
-    st.metric("Patrimonio en pesos", fmt_money(total_ars, "ARS"), border=True)
-    st.metric("Patrimonio en dólares", fmt_money(total_usd, "USD"), border=True)
-    st.metric("Cuentas con saldo", str(n_cuentas), border=True)
+evol_ars = reports.patrimonio_evolucion(diario, "ARS")
+evol_usd = reports.patrimonio_evolucion(diario, "USD")
+delta_ars = evol_ars[-1] - evol_ars[-2] if len(evol_ars) >= 2 else None
+delta_usd = evol_usd[-1] - evol_usd[-2] if len(evol_usd) >= 2 else None
+
+col_p_ars, col_p_usd, col_p_n = st.columns([2, 2, 1])
+with col_p_ars:
+    with st.container(border=True):
+        st.caption(":blue[**● Patrimonio en pesos**]")
+        st.metric(
+            "Patrimonio en pesos", fmt_money(total_ars, "ARS"), label_visibility="collapsed",
+            delta=fmt_money(delta_ars, "ARS") if delta_ars is not None else None,
+            delta_description="vs. mes anterior",
+            chart_data=evol_ars if len(evol_ars) > 1 else None, chart_type="area",
+        )
+with col_p_usd:
+    with st.container(border=True):
+        st.caption(":green[**● Patrimonio en dólares**]")
+        st.metric(
+            "Patrimonio en dólares", fmt_money(total_usd, "USD"), label_visibility="collapsed",
+            delta=fmt_money(delta_usd, "USD") if delta_usd is not None else None,
+            delta_description="vs. mes anterior",
+            chart_data=evol_usd if len(evol_usd) > 1 else None, chart_type="area",
+        )
+with col_p_n:
+    with st.container(border=True):
+        st.caption("&nbsp;")
+        st.metric(":material/account_balance_wallet: Cuentas con saldo", str(n_cuentas))
 
 if saldos.empty:
     st.info("Todavía no hay movimientos cargados. Cargá el primero desde Diario.", icon=":material/info:")
@@ -49,13 +73,17 @@ if saldos.empty:
 cuentas_inversion = config.get("cuentas_inversion", [])
 es_inversion = saldos["cuenta"].isin(cuentas_inversion)
 
-with st.container(horizontal=True):
-    for moneda in ("ARS", "USD"):
-        en_moneda = saldos["moneda"] == moneda
-        disponible = saldos.loc[en_moneda & ~es_inversion, "saldo"].sum()
-        invertido = saldos.loc[en_moneda & es_inversion, "saldo"].sum()
-        st.metric(f"Disponible ({moneda})", fmt_money(disponible, moneda), border=True)
-        st.metric(f"Invertido ({moneda})", fmt_money(invertido, moneda), border=True)
+col_d_ars, col_d_usd = st.columns(2)
+for col, moneda, color in ((col_d_ars, "ARS", "blue"), (col_d_usd, "USD", "green")):
+    with col:
+        with st.container(border=True):
+            st.caption(f":{color}[**● {'Pesos' if moneda == 'ARS' else 'Dólares'} — disponible vs. invertido**]")
+            en_moneda = saldos["moneda"] == moneda
+            disponible = saldos.loc[en_moneda & ~es_inversion, "saldo"].sum()
+            invertido = saldos.loc[en_moneda & es_inversion, "saldo"].sum()
+            with st.container(horizontal=True):
+                st.metric(":material/savings: Disponible", fmt_money(disponible, moneda))
+                st.metric(":material/trending_up: Invertido", fmt_money(invertido, moneda))
 
 col_ars, col_usd = st.columns(2)
 with col_ars:
