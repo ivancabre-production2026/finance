@@ -12,11 +12,17 @@ def _df(entries: list) -> pd.DataFrame:
     return df
 
 
+_CONCEPTOS_NO_ACTIVIDAD = ("Saldo Inicial", "Transferencia", "Ajuste")
+
+
 def _sin_saldo_inicial(df: pd.DataFrame) -> pd.DataFrame:
-    """'Saldo Inicial' es un asiento de arranque, no un movimiento real: se excluye de los reportes de actividad."""
+    """Excluye asientos que no son actividad economica real: 'Saldo Inicial' (arranque),
+    'Transferencia' (plata moviendose entre tus propias cuentas) y 'Ajuste' (parches de
+    conciliacion). Ninguno de estos es ingreso o gasto real, asi que no deben inflar los
+    totales de Ingresos/Egresos ni el flujo mensual."""
     if df.empty:
         return df
-    return df[df["concepto"] != "Saldo Inicial"]
+    return df[~df["concepto"].isin(_CONCEPTOS_NO_ACTIVIDAD)]
 
 
 def ing_egr_mes(entries: list, anio: int, mes: int) -> dict:
