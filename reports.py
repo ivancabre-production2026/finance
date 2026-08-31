@@ -46,19 +46,21 @@ def ing_egr_mes(entries: list, anio: int, mes: int) -> dict:
 
 
 def saldos_cuentas(entries: list, cuentas: list) -> pd.DataFrame:
-    """Saldo real de cada cuenta (ingresos - egresos acumulados), por moneda."""
+    """Saldo real de cada cuenta (ingresos - egresos acumulados), por moneda, y cuantos
+    movimientos tiene cada una (para poder mostrar primero las cuentas mas usadas)."""
     df = _df(entries)
     filas = []
     for cuenta in cuentas:
         sub = df[df["cuenta"] == cuenta] if not df.empty else df
+        n_movs = len(sub) if not sub.empty else 0
         for moneda in ("ARS", "USD"):
             sub_moneda = sub[sub["moneda"] == moneda] if not sub.empty else sub
             ingresos = sub_moneda[sub_moneda["tipo"] == "ingreso"]["monto"].sum() if not sub_moneda.empty else 0
             egresos = sub_moneda[sub_moneda["tipo"] == "egreso"]["monto"].sum() if not sub_moneda.empty else 0
             saldo = ingresos - egresos
             if saldo != 0:
-                filas.append({"cuenta": cuenta, "moneda": moneda, "saldo": saldo})
-    return pd.DataFrame(filas, columns=["cuenta", "moneda", "saldo"])
+                filas.append({"cuenta": cuenta, "moneda": moneda, "saldo": saldo, "n_movs": n_movs})
+    return pd.DataFrame(filas, columns=["cuenta", "moneda", "saldo", "n_movs"])
 
 
 def conceptos_fijos_mes(entries: list, conceptos: list, tipo: str, anio: int, mes: int) -> pd.DataFrame:

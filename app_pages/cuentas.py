@@ -106,9 +106,26 @@ with col_usd:
 
 with st.container(border=True):
     st.markdown("**:material/table_chart: Detalle por cuenta**")
-    detalle = saldos.sort_values(["moneda", "saldo"], ascending=[True, False]).copy()
+    st.caption("Las cuentas con más movimiento aparecen primero.")
+    detalle = saldos.sort_values(["n_movs", "saldo"], ascending=[False, False]).copy()
     detalle["tipo"] = detalle["cuenta"].isin(cuentas_inversion).map({True: "Invertido", False: "Disponible"})
     detalle = fmt_df(detalle, ["saldo"])
     detalle = detalle.rename(columns={"cuenta": "Cuenta", "moneda": "Moneda", "saldo": "Saldo", "tipo": "Tipo"})
     detalle = detalle[["Cuenta", "Moneda", "Saldo", "Tipo"]]
-    st.dataframe(detalle, hide_index=True, width="stretch")
+
+    def _estilo_detalle(row):
+        es_ars = row["Moneda"] == "ARS"
+        color_moneda = "#60A5FA" if es_ars else "#34D399"
+        if row["Tipo"] == "Invertido":
+            bg_tipo, color_tipo = "#241B4A", "#C4B5FD"
+        else:
+            bg_tipo, color_tipo = "#0F2E23", "#6EE7B7"
+        return [
+            "",
+            f"color: {color_moneda}; font-weight: 600",
+            f"color: {color_moneda}; font-weight: 600",
+            f"background-color: {bg_tipo}; color: {color_tipo}; font-weight: 600; border-radius: 6px",
+        ]
+
+    styled = detalle.style.apply(_estilo_detalle, axis=1).set_properties(**{"font-size": "15px", "padding": "8px 12px"})
+    st.dataframe(styled, hide_index=True, width="stretch")
