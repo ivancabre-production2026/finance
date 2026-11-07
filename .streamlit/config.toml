@@ -1,72 +1,77 @@
-# Tema "Finanzas Personales" — dashboard financiero profesional (oscuro)
+# Tema "Finanzas Personales" — claro, paleta verde, sidebar verde oscuro
 [theme]
-base = "dark"
-primaryColor = "#3B82F6"
-backgroundColor = "#0B1120"
-secondaryBackgroundColor = "#161F32"
-codeBackgroundColor = "#161F32"
-textColor = "#E2E8F0"
-linkColor = "#60A5FA"
-borderColor = "#283449"
-codeTextColor = "#CBD5E1"
+base = "light"
+primaryColor = "#0B5D3B"
+backgroundColor = "#F6F7F2"
+secondaryBackgroundColor = "#E9EFE7"
+textColor = "#12261B"
+linkColor = "#0B5D3B"
+borderColor = "#D5DDD0"
+codeBackgroundColor = "#E9EFE7"
+codeTextColor = "#12261B"
 showWidgetBorder = true
-showSidebarBorder = true
-baseRadius = "10px"
-buttonRadius = "8px"
+showSidebarBorder = false
+baseRadius = "12px"
+buttonRadius = "10px"
 
 font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap"
+headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap"
 codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
-baseFontSize = 14
+baseFontSize = 16
 baseFontWeight = 400
-headingFontSizes = ["26px", "21px", "17px", "15px", "14px", "13px"]
-headingFontWeights = [700, 600, 600, 600, 500, 500]
+headingFontSizes = ["38px", "26px", "21px", "18px", "16px", "14px"]
+headingFontWeights = [800, 700, 700, 700, 600, 600]
 linkUnderline = false
 
-# Semántica: verde = ingreso/positivo, rojo = egreso/negativo
-greenColor = "#34D399"
-greenBackgroundColor = "#0F2E23"
-greenTextColor = "#6EE7B7"
-redColor = "#F87171"
-redBackgroundColor = "#3A1518"
-redTextColor = "#FCA5A5"
-yellowColor = "#FBBF24"
-orangeColor = "#FB923C"
-blueColor = "#60A5FA"
-violetColor = "#A78BFA"
-grayColor = "#94A3B8"
+# Semántica: verde = ingreso/positivo, rojo = egreso/negativo, azul = pesos
+greenColor = "#15803D"
+greenBackgroundColor = "#DCFCE7"
+greenTextColor = "#166534"
+redColor = "#DC2626"
+redBackgroundColor = "#FEE2E2"
+redTextColor = "#991B1B"
+yellowColor = "#D97706"
+yellowBackgroundColor = "#FEF3C7"
+yellowTextColor = "#92400E"
+orangeColor = "#EA580C"
+blueColor = "#1D4ED8"
+blueBackgroundColor = "#DBEAFE"
+blueTextColor = "#1E40AF"
+violetColor = "#6D28D9"
+grayColor = "#6B7280"
 
 chartCategoricalColors = [
-    "#3B82F6",
-    "#34D399",
-    "#A78BFA",
-    "#FBBF24",
-    "#F87171",
-    "#38BDF8",
-    "#FB923C",
-    "#94A3B8",
+    "#0B5D3B",
+    "#4CAF7A",
+    "#2563EB",
+    "#F59E0B",
+    "#DC2626",
+    "#7C3AED",
+    "#0891B2",
+    "#6B7280",
 ]
 
 chartSequentialColors = [
-    "#0C1E3D",
-    "#0F2A57",
-    "#123669",
-    "#15468A",
-    "#1D5CB3",
-    "#2E75D6",
-    "#5C97E6",
-    "#8FBBEF",
-    "#C2DAF7",
-    "#EAF2FC",
+    "#F0F7F1",
+    "#DCEEDF",
+    "#C4E3CA",
+    "#A7D7B0",
+    "#86C595",
+    "#5FAF78",
+    "#3F9660",
+    "#277A4B",
+    "#14603A",
+    "#0A4A2C",
 ]
 
-dataframeBorderColor = "#283449"
-dataframeHeaderBackgroundColor = "#161F32"
+dataframeBorderColor = "#D5DDD0"
+dataframeHeaderBackgroundColor = "#E9EFE7"
 
 [theme.sidebar]
-backgroundColor = "#080D1A"
-secondaryBackgroundColor = "#161F32"
-codeBackgroundColor = "#161F32"
-textColor = "#E2E8F0"
-borderColor = "#283449"
-primaryColor = "#3B82F6"
+backgroundColor = "#0B3D2B"
+secondaryBackgroundColor = "#14573F"
+codeBackgroundColor = "#14573F"
+textColor = "#E8F3EC"
+linkColor = "#9FE3BC"
+borderColor = "#1B5A43"
+primaryColor = "#86EFAC"

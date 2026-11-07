@@ -42,9 +42,9 @@ with col_usd:
 
 def _color_estado(row):
     if row["pagado"]:
-        estilo = "background-color: #0F2E23; color: #6EE7B7"
+        estilo = "background-color: #DCFCE7; color: #166534"
     else:
-        estilo = "background-color: #3A1518; color: #FCA5A5"
+        estilo = "background-color: #FEE2E2; color: #991B1B"
     return [estilo] * len(row)
 
 
@@ -95,8 +95,8 @@ def _seccion(titulo: str, icono: str, df, color: str):
                 st.caption("Sin montos en pesos para graficar.")
 
 
-_seccion("Ingresos por concepto", "trending_up", ingresos, "#34D399")
-_seccion("Egresos por concepto", "trending_down", egresos, "#F87171")
+_seccion("Ingresos por concepto", "trending_up", ingresos, "#16A34A")
+_seccion("Egresos por concepto", "trending_down", egresos, "#DC2626")
 
 with st.container(border=True):
     st.markdown("**:material/insights: Evolución mensual**")
@@ -110,5 +110,5 @@ with st.container(border=True):
                 continue
             st.caption(f"En {moneda}")
             pivot = sub.pivot(index="periodo", columns="tipo", values="monto").fillna(0)
-            colores = [c for c, tipo in zip(["#F87171", "#34D399"], ["egreso", "ingreso"]) if tipo in pivot.columns]
+            colores = [c for c, tipo in zip(["#DC2626", "#16A34A"], ["egreso", "ingreso"]) if tipo in pivot.columns]
             st.bar_chart(pivot, color=colores)

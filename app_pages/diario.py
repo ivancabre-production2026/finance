@@ -54,7 +54,7 @@ if diario:
     })
 
     def _color_tipo(row):
-        color = "#6EE7B7" if row["Tipo"] == "ingreso" else "#FCA5A5"
+        color = "#15803D" if row["Tipo"] == "ingreso" else "#B91C1C"
         return [f"color: {color}"] * len(row)
 
     styled = df_view.style.apply(_color_tipo, axis=1)

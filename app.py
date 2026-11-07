@@ -18,13 +18,15 @@ st.set_page_config(
 if not check_password():
     st.stop()
 
+st.logo("assets/logo.svg", size="large", icon_image="assets/logo_icon.svg")
+
 page = st.navigation(
     [
-        st.Page("app_pages/cuentas.py", title="Cuentas", icon=":material/account_balance_wallet:", default=True),
-        st.Page("app_pages/movimientos.py", title="Movimientos", icon=":material/receipt_long:"),
-        st.Page("app_pages/diario.py", title="Diario", icon=":material/edit_note:"),
-        st.Page("app_pages/asistente.py", title="Asistente", icon=":material/smart_toy:"),
-        st.Page("app_pages/config.py", title="Config", icon=":material/settings:"),
+        st.Page("app_pages/cuentas.py", title="Resumen", icon=":material/home:", default=True),
+        st.Page("app_pages/movimientos.py", title="Movimientos", icon=":material/swap_horiz:"),
+        st.Page("app_pages/diario.py", title="Diario", icon=":material/edit_calendar:"),
+        st.Page("app_pages/asistente.py", title="Asistente", icon=":material/auto_awesome:"),
+        st.Page("app_pages/config.py", title="Configuración", icon=":material/settings:"),
     ],
     position="sidebar",
 )
