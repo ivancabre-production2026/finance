@@ -193,6 +193,49 @@ h1 { letter-spacing: -0.02em; margin-bottom: 0.1rem; }
 .fp-row-amt { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
 .fp-row-amt small { display: block; color: var(--fp-muted); font-weight: 600; font-size: 13px; }
 
+/* ---------- Widgets generales ---------- */
+[data-testid="stExpander"] details {
+  background: var(--fp-card);
+  border: 1px solid var(--fp-line);
+  border-radius: 14px;
+}
+[data-testid="stAlert"] { border-radius: 14px; }
+[data-testid="stForm"] { padding: 0; }
+.stButton button, [data-testid="stFormSubmitButton"] button { font-weight: 600; }
+
+/* ---------- Asistente (chat) ---------- */
+[data-testid="stChatMessage"] {
+  background: var(--fp-card);
+  border: 1px solid var(--fp-line);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: var(--fp-shadow);
+  margin-bottom: 10px;
+}
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) { background: #EAF5EE; }
+[data-testid="stChatInput"] { border-radius: 16px; box-shadow: var(--fp-shadow); }
+
+/* ---------- Pantalla de ingreso ---------- */
+.st-key-card-login {
+  background: var(--fp-card);
+  border: 1px solid var(--fp-line);
+  border-radius: 20px;
+  padding: 36px 34px 30px;
+  box-shadow: var(--fp-shadow);
+  margin-top: 10vh;
+}
+.fp-login { text-align: center; margin-bottom: 20px; }
+.fp-login-ico {
+  width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 18px;
+  background: var(--fp-green); color: #fff; font-size: 34px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.fp-login-t { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: var(--fp-ink); }
+.fp-login-s { font-size: 16px; color: var(--fp-muted); margin-top: 4px; }
+
+/* ---------- Asistente: sugerencias ---------- */
+.fp-sugerencias-t { font-size: 16px; color: var(--fp-muted); margin: 4px 0 10px; }
+
 @media (max-width: 900px) {
   .fp-dist-row { grid-template-columns: 1fr; gap: 8px; }
   .fp-table { font-size: 15px; }

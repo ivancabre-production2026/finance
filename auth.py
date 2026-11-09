@@ -56,8 +56,18 @@ def check_password() -> bool:
         else:
             st.session_state["authenticated"] = False
 
-    st.title("🔒 Finanzas personales")
-    st.text_input("Contraseña", type="password", on_change=_validar, key="password_input")
-    if st.session_state.get("authenticated") is False:
-        st.error("Contraseña incorrecta.", icon=":material/error:")
+    _, centro, _ = st.columns([1, 1.3, 1])
+    with centro:
+        with st.container(key="card-login"):
+            st.html(
+                '<div class="fp-login"><div class="fp-login-ico">F</div>'
+                '<div class="fp-login-t">Finanzas personales</div>'
+                '<div class="fp-login-s">Ingresá tu contraseña para continuar</div></div>'
+            )
+            st.text_input(
+                "Contraseña", type="password", on_change=_validar, key="password_input",
+                placeholder="Contraseña", icon=":material/lock:", label_visibility="collapsed",
+            )
+            if st.session_state.get("authenticated") is False:
+                st.error("Contraseña incorrecta.", icon=":material/error:")
     return False

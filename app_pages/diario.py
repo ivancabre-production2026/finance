@@ -28,11 +28,15 @@ with st.container(key="card-form"):
         monto = c6.number_input("Monto", min_value=0.0, step=100.0, format="%.2f")
 
         nota = st.text_input("Nota (opcional)")
+        sin_saldo = st.checkbox(
+            "Devengado: cuenta como pagado del mes, pero todavía no descontar del saldo",
+            help="Para algo que se cobra después, por ejemplo en el resumen de la tarjeta del mes que viene.",
+        )
         if st.form_submit_button("Cargar movimiento", type="primary", icon=":material/add_circle:"):
             if monto <= 0:
                 st.error("El monto tiene que ser mayor a 0.")
             else:
-                diario_store.add({
+                entrada = {
                     "fecha": fecha.isoformat(),
                     "tipo": tipo,
                     "concepto": concepto,
@@ -40,7 +44,10 @@ with st.container(key="card-form"):
                     "moneda": moneda,
                     "monto": monto,
                     "nota": nota,
-                })
+                }
+                if sin_saldo:
+                    entrada["sin_saldo"] = True
+                diario_store.add(entrada)
                 st.toast("Movimiento cargado", icon=":material/check_circle:")
                 st.rerun()
 

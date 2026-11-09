@@ -219,6 +219,8 @@ def tabla_movimientos(rows: list) -> str:
         signo = "+" if es_ing else "−"
         monto = f'{signo} {fmt_money(r["monto"], r["moneda"])}'
         pill = '<span class="fp-pill ok">Ingreso</span>' if es_ing else '<span class="fp-pill egr">Egreso</span>'
+        if r.get("sin_saldo"):
+            pill += ' <span class="fp-pill pend" title="Cuenta como gasto del mes, pero todavía no descontó saldo">Devengado</span>'
         nota_completa = (r.get("nota") or "").strip()
         trs.append(
             "<tr>"

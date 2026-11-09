@@ -17,11 +17,12 @@ st.set_page_config(
     layout="wide",
 )
 
+st.html(Path(__file__).parent / "assets" / "style.css")  # estilos propios (tarjetas, tabla, barras, login)
+
 if not check_password():
     st.stop()
 
 st.logo("assets/logo.svg", size="large", icon_image="assets/logo_icon.svg")
-st.html(Path(__file__).parent / "assets" / "style.css")  # estilos propios (tarjetas, tabla, barras)
 
 page = st.navigation(
     [

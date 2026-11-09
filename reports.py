@@ -15,6 +15,14 @@ def _df(entries: list) -> pd.DataFrame:
 _CONCEPTOS_NO_ACTIVIDAD = ("Saldo Inicial", "Transferencia", "Ajuste")
 
 
+def _con_saldo(df: pd.DataFrame) -> pd.DataFrame:
+    """Quita los movimientos 'devengados' (sin_saldo): cuentan como gasto/ingreso del mes,
+    pero todavía no movieron plata (ej. algo que se cobra en el resumen de la tarjeta del mes que viene)."""
+    if df.empty or "sin_saldo" not in df.columns:
+        return df
+    return df[~df["sin_saldo"].fillna(False).astype(bool)]
+
+
 def _sin_saldo_inicial(df: pd.DataFrame) -> pd.DataFrame:
     """Excluye asientos que no son actividad economica real: 'Saldo Inicial' (arranque),
     'Transferencia' (plata moviendose entre tus propias cuentas) y 'Ajuste' (parches de
@@ -48,7 +56,7 @@ def ing_egr_mes(entries: list, anio: int, mes: int) -> dict:
 def saldos_cuentas(entries: list, cuentas: list) -> pd.DataFrame:
     """Saldo real de cada cuenta (ingresos - egresos acumulados), por moneda, y cuantos
     movimientos tiene cada una (para poder mostrar primero las cuentas mas usadas)."""
-    df = _df(entries)
+    df = _con_saldo(_df(entries))
     filas = []
     for cuenta in cuentas:
         sub = df[df["cuenta"] == cuenta] if not df.empty else df
@@ -82,7 +90,7 @@ def conceptos_fijos_mes(entries: list, conceptos: list, tipo: str, anio: int, me
 
 def patrimonio_evolucion(entries: list, moneda: str) -> list[float]:
     """Patrimonio total (todas las cuentas) al cierre de cada mes, para una moneda. Para sparklines."""
-    df = _df(entries)
+    df = _con_saldo(_df(entries))
     if df.empty:
         return []
     df = df[df["moneda"] == moneda]
