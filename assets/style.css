@@ -147,6 +147,52 @@ h1 { letter-spacing: -0.02em; margin-bottom: 0.1rem; }
 .fp-seg.disp { background: var(--fp-green-soft); color: #0B3D2B; }
 .fp-seg.inv { background: var(--fp-green); color: #FFFFFF; justify-content: flex-end; flex: 1; }
 
+/* ---------- Tarjeta HTML genérica ---------- */
+.fp-card {
+  background: var(--fp-card);
+  border: 1px solid var(--fp-line);
+  border-radius: 18px;
+  padding: 22px 26px;
+  box-shadow: var(--fp-shadow);
+  height: 100%;
+}
+.fp-card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
+.fp-hero { }
+.fp-big {
+  font-size: clamp(20px, 5.4cqw, 32px); font-weight: 800; margin-top: 2px;
+  letter-spacing: -0.02em; white-space: nowrap;
+}
+.pos { color: #15803D; }
+.neg { color: #B91C1C; }
+
+/* Pastillas de estado */
+.fp-pill.ok { background: #D6EFDD; color: #14603A; }
+.fp-pill.pend { background: #FFE8C2; color: #8A5300; }
+.fp-pill.egr { background: #FCE1E1; color: #991B1B; }
+
+/* Tablas (fijos y movimientos) */
+.fp-table td.b { font-weight: 700; }
+.fp-table td.nw { white-space: nowrap; }
+.fp-table td.muted, .fp-table .muted { color: var(--fp-muted); }
+.fp-table td.nota div { font-size: 14px; max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-scroll { overflow-x: auto; }
+.fp-mov td, .fp-mov th { padding-left: 9px; padding-right: 9px; white-space: nowrap; }
+.fp-mov { font-size: 14px; margin-top: 4px; }
+
+/* Rubros con barra */
+.fp-row {
+  display: grid; grid-template-columns: minmax(110px, 1.1fr) 1.6fr minmax(110px, 1fr);
+  gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid #EEF1EB;
+}
+.fp-row:last-child { border-bottom: none; }
+.fp-row-name { font-weight: 700; font-size: 16px; }
+.fp-row-bar { height: 10px; border-radius: 999px; background: #EEF3EC; overflow: hidden; }
+.fp-row-bar i { display: block; height: 100%; border-radius: 999px; }
+.fp-row-bar.ing i { background: #2FA66B; }
+.fp-row-bar.egr i { background: #E5605A; }
+.fp-row-amt { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fp-row-amt small { display: block; color: var(--fp-muted); font-weight: 600; font-size: 13px; }
+
 @media (max-width: 900px) {
   .fp-dist-row { grid-template-columns: 1fr; gap: 8px; }
   .fp-table { font-size: 15px; }

@@ -111,3 +111,128 @@ def distribucion(items: list) -> str:
     )
     cabecera = f'<div class="fp-dist-head"><div class="fp-sec-title">Distribución del patrimonio</div>{leyenda}</div>'
     return cabecera + "".join(filas)
+
+
+# ---------------------------------------------------------------- Movimientos
+def kpi_movimientos(moneda: str, nombre: str, ingresos: float, egresos: float) -> str:
+    icono = "paid" if moneda == "ARS" else "account_balance_wallet"
+    clase = "ars" if moneda == "ARS" else "usd"
+    return f"""
+<div class="fp-hero">
+  <div class="fp-hero-top">
+    <div class="fp-ico {clase}"><span>{icono}</span></div>
+    <div>
+      <div class="fp-hero-label">{escape(nombre)} ({moneda})</div>
+      <div class="fp-delta">Movimientos del mes</div>
+    </div>
+  </div>
+  <div class="fp-sep"></div>
+  <div class="fp-split">
+    <div><div class="fp-k">Ingresos</div><div class="fp-big pos">{escape(fmt_money(ingresos, moneda))}</div></div>
+    <div class="fp-vsep"></div>
+    <div><div class="fp-k">Egresos</div><div class="fp-big neg">{escape(fmt_money(egresos, moneda))}</div></div>
+  </div>
+</div>
+"""
+
+
+def tarjeta_fijos(titulo: str, filas: list, palabra_ok: str, palabra_pend: str) -> str:
+    """filas: dicts con concepto, ARS, USD, pagado. Pendientes primero."""
+    pend = [f for f in filas if not f["pagado"]]
+    ok = [f for f in filas if f["pagado"]]
+    if not filas:
+        cuerpo = '<div class="fp-vacio">No configuraste ninguno todavía (se hace desde Configuración).</div>'
+        resumen = ""
+    else:
+        def celda_monto(f: dict) -> str:
+            partes = []
+            if f["ARS"] > 0:
+                partes.append(escape(fmt_money(f["ARS"], "ARS")))
+            if f["USD"] > 0:
+                partes.append(escape(fmt_money(f["USD"], "USD")))
+            if not partes:
+                return '<td class="r zero nw">—</td>'
+            return '<td class="r nw">' + "<br>".join(partes) + "</td>"
+
+        trs = []
+        for f in pend + ok:
+            pill = (
+                f'<span class="fp-pill ok">{escape(palabra_ok)}</span>' if f["pagado"]
+                else f'<span class="fp-pill pend">{escape(palabra_pend)}</span>'
+            )
+            trs.append(
+                f'<tr><td class="b">{escape(f["concepto"])}</td>{celda_monto(f)}<td class="nw">{pill}</td></tr>'
+            )
+        cuerpo = (
+            '<table class="fp-table"><thead><tr><th>Concepto</th><th class="r">Monto</th><th>Estado</th></tr></thead>'
+            "<tbody>" + "".join(trs) + "</tbody></table>"
+        )
+        resumen = (
+            f'<span class="fp-pill pend">{len(pend)} {escape(palabra_pend.lower())}{"s" if len(pend) != 1 else ""}</span>'
+            if pend else '<span class="fp-pill ok">Todo al día</span>'
+        )
+    return (
+        f'<div class="fp-card"><div class="fp-card-head"><div class="fp-sec-title">{escape(titulo)}</div>{resumen}</div>{cuerpo}</div>'
+    )
+
+
+def tarjeta_conceptos(titulo: str, filas: list, tipo: str) -> str:
+    """filas: dicts con concepto, ARS, USD. tipo: 'ing' o 'egr' (color de la barra)."""
+    if not filas:
+        return f'<div class="fp-card"><div class="fp-sec-title">{escape(titulo)}</div><div class="fp-vacio">Sin movimientos este mes.</div></div>'
+    filas = sorted(filas, key=lambda f: (f["ARS"], f["USD"]), reverse=True)
+    max_ars = max((f["ARS"] for f in filas), default=0.0)
+    max_usd = max((f["USD"] for f in filas), default=0.0)
+    items = []
+    for f in filas:
+        if f["ARS"] > 0 and max_ars > 0:
+            frac = f["ARS"] / max_ars
+        elif max_usd > 0:
+            frac = f["USD"] / max_usd
+        else:
+            frac = 0.0
+        montos = ""
+        if f["ARS"] > 0:
+            montos += escape(fmt_money(f["ARS"], "ARS"))
+        if f["USD"] > 0:
+            linea = escape(fmt_money(f["USD"], "USD"))
+            montos += f"<small>{linea}</small>" if f["ARS"] > 0 else linea
+        items.append(
+            '<div class="fp-row">'
+            f'<div class="fp-row-name">{escape(f["concepto"])}</div>'
+            f'<div class="fp-row-bar {tipo}"><i style="width:{max(frac * 100, 2):.1f}%"></i></div>'
+            f'<div class="fp-row-amt">{montos}</div></div>'
+        )
+    return f'<div class="fp-card"><div class="fp-card-head"><div class="fp-sec-title">{escape(titulo)}</div></div>{"".join(items)}</div>'
+
+
+# --------------------------------------------------------------------- Diario
+def tabla_movimientos(rows: list) -> str:
+    """rows: dicts con id, fecha (AAAA-MM-DD), tipo, concepto, cuenta, moneda, monto, nota."""
+    if not rows:
+        return '<div class="fp-vacio">No hay movimientos que coincidan.</div>'
+    trs = []
+    for r in rows:
+        f = r["fecha"]
+        fecha = f"{f[8:10]}/{f[5:7]}/{f[:4]}"
+        es_ing = r["tipo"] == "ingreso"
+        signo = "+" if es_ing else "−"
+        monto = f'{signo} {fmt_money(r["monto"], r["moneda"])}'
+        pill = '<span class="fp-pill ok">Ingreso</span>' if es_ing else '<span class="fp-pill egr">Egreso</span>'
+        nota_completa = (r.get("nota") or "").strip()
+        trs.append(
+            "<tr>"
+            f'<td class="muted">{fecha}</td>'
+            f'<td class="b">{escape(r["concepto"])}</td>'
+            f'<td>{escape(r["cuenta"])}</td>'
+            f"<td>{pill}</td>"
+            f'<td class="r tot {"pos" if es_ing else "neg"}">{escape(monto)}</td>'
+            f'<td class="muted nota"><div title="{escape(nota_completa)}">{escape(nota_completa)}</div></td>'
+            f'<td class="muted r">#{r["id"]}</td>'
+            "</tr>"
+        )
+    return (
+        '<div class="fp-scroll"><table class="fp-table fp-mov"><thead><tr>'
+        '<th>Fecha</th><th>Concepto</th><th>Cuenta</th><th>Tipo</th><th class="r">Monto</th><th>Nota</th><th class="r">ID</th>'
+        "</tr></thead><tbody>" + "".join(trs) + "</tbody></table></div>"
+    )

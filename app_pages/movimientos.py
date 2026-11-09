@@ -1,114 +1,70 @@
 """Ingresos y egresos del mes, por concepto."""
-import datetime as dt
-
 import streamlit as st
 
 import reports
-from ui import MESES, fmt, fmt_df, load_data
-
-st.title("Movimientos del mes")
+import ui_html
+from ui import MESES, load_data, meses_disponibles
 
 config, diario = load_data()
 
-hoy = dt.date.today()
-with st.container(horizontal=True):
-    anio = st.selectbox("Año", list(range(hoy.year - 2, hoy.year + 1)), index=2)
-    mes = st.selectbox("Mes", list(range(1, 13)), index=hoy.month - 1, format_func=lambda m: MESES[m - 1])
+meses = meses_disponibles(diario)
+etiquetas = [f"{MESES[m - 1]} {a}" for a, m in meses]
 
-st.caption(f"{MESES[mes - 1]} {anio}")
+# --- Encabezado -------------------------------------------------------------
+col_titulo, col_mes = st.columns([3.2, 1.4], vertical_alignment="center")
+with col_titulo:
+    st.title("Movimientos del mes")
+    st.caption("Lo que entró y salió, y qué pagos fijos siguen pendientes.")
+with col_mes:
+    elegida = st.selectbox("Mes", etiquetas, label_visibility="collapsed", key="movimientos_mes")
+anio, mes = meses[etiquetas.index(elegida)]
 
 vista = reports.ing_egr_mes(diario, anio, mes)
 ingresos = vista["ingresos"]
 egresos = vista["egresos"]
 
-total_ing_ars = ingresos["ARS"].sum() if not ingresos.empty else 0.0
-total_ing_usd = ingresos["USD"].sum() if not ingresos.empty else 0.0
-total_egr_ars = egresos["ARS"].sum() if not egresos.empty else 0.0
-total_egr_usd = egresos["USD"].sum() if not egresos.empty else 0.0
 
+def _total(df, moneda: str) -> float:
+    return float(df[moneda].sum()) if not df.empty else 0.0
+
+
+# --- Resumen por moneda -----------------------------------------------------
 col_ars, col_usd = st.columns(2)
 with col_ars:
-    with st.container(border=True, key="card-pesos"):
-        st.caption(":blue[**● Pesos (ARS)**]")
-        with st.container(horizontal=True):
-            st.metric(":material/trending_up: Ingresos", f"$ {fmt(total_ing_ars)}")
-            st.metric(":material/trending_down: Egresos", f"$ {fmt(total_egr_ars)}")
+    st.html(ui_html.kpi_movimientos("ARS", "Pesos", _total(ingresos, "ARS"), _total(egresos, "ARS")))
 with col_usd:
-    with st.container(border=True, key="card-dolares"):
-        st.caption(":green[**● Dólares (USD)**]")
-        with st.container(horizontal=True):
-            st.metric(":material/trending_up: Ingresos", f"US$ {fmt(total_ing_usd)}")
-            st.metric(":material/trending_down: Egresos", f"US$ {fmt(total_egr_usd)}")
+    st.html(ui_html.kpi_movimientos("USD", "Dólares", _total(ingresos, "USD"), _total(egresos, "USD")))
 
-def _color_estado(row):
-    if row["pagado"]:
-        estilo = "background-color: #DCFCE7; color: #166534"
-    else:
-        estilo = "background-color: #FEE2E2; color: #991B1B"
-    return [estilo] * len(row)
-
-
-def _tarjeta_pendientes(titulo: str, conceptos: list, tipo: str, verbo: str):
-    with st.container(border=True, key=f"card-pend-{tipo}"):
-        st.markdown(f"**:material/notifications_active: {titulo}**")
-        if not conceptos:
-            st.caption("No configuraste ninguno todavía (se hace desde Config).")
-            return
-        df = reports.conceptos_fijos_mes(diario, conceptos, tipo, anio, mes)
-        pendientes = df.loc[~df["pagado"], "concepto"].tolist()
-        if pendientes:
-            st.warning(f"{len(pendientes)} sin {verbo}: {', '.join(pendientes)}", icon=":material/warning:")
-        else:
-            st.success(f"Todos están al día este mes.", icon=":material/check_circle:")
-
-        tabla = df.copy()
-        tabla["Estado"] = tabla["pagado"].map({True: "OK", False: "Pendiente"})
-        tabla["ARS"] = tabla["ARS"].apply(fmt)
-        tabla["USD"] = tabla["USD"].apply(fmt)
-        tabla = tabla.rename(columns={"concepto": "Concepto"})[["Concepto", "ARS", "USD", "Estado", "pagado"]]
-        styled = tabla.style.apply(_color_estado, axis=1)
-        st.dataframe(styled, column_config={"pagado": None}, hide_index=True, width="stretch")
-
-
+# --- Pagos y cobros fijos ---------------------------------------------------
 col_ing_fijos, col_egr_fijos = st.columns(2)
 with col_ing_fijos:
-    _tarjeta_pendientes("Ingresos fijos del mes", config.get("ingresos_fijos", []), "ingreso", "cobrar")
+    conceptos = config.get("ingresos_fijos", [])
+    filas = reports.conceptos_fijos_mes(diario, conceptos, "ingreso", anio, mes).to_dict("records") if conceptos else []
+    st.html(ui_html.tarjeta_fijos("Ingresos fijos del mes", filas, "Cobrado", "Pendiente"))
 with col_egr_fijos:
-    _tarjeta_pendientes("Gastos fijos del mes", config.get("fijos", []), "egreso", "pagar")
+    conceptos = config.get("fijos", [])
+    filas = reports.conceptos_fijos_mes(diario, conceptos, "egreso", anio, mes).to_dict("records") if conceptos else []
+    st.html(ui_html.tarjeta_fijos("Gastos fijos del mes", filas, "Pagado", "Pendiente"))
 
+# --- Por concepto -----------------------------------------------------------
+col_ing, col_egr = st.columns(2)
+with col_ing:
+    st.html(ui_html.tarjeta_conceptos("Ingresos por concepto", ingresos.to_dict("records"), "ing"))
+with col_egr:
+    st.html(ui_html.tarjeta_conceptos("Egresos por concepto", egresos.to_dict("records"), "egr"))
 
-def _seccion(titulo: str, icono: str, df, color: str):
-    with st.container(border=True, key=f"card-sec-{icono}"):
-        st.markdown(f"**:material/{icono}: {titulo}**")
-        if df.empty:
-            st.caption(f"Sin {titulo.lower()} este mes.")
-            return
-        col_tabla, col_grafico = st.columns([1, 1])
-        with col_tabla:
-            tabla = fmt_df(df, ["ARS", "USD"]).rename(columns={"concepto": "Concepto"})
-            st.dataframe(tabla, hide_index=True, width="stretch")
-        with col_grafico:
-            ars_df = df[df["ARS"] != 0].sort_values("ARS", ascending=False)
-            if not ars_df.empty:
-                st.bar_chart(ars_df.set_index("concepto")["ARS"], horizontal=True, color=color)
-            else:
-                st.caption("Sin montos en pesos para graficar.")
-
-
-_seccion("Ingresos por concepto", "trending_up", ingresos, "#16A34A")
-_seccion("Egresos por concepto", "trending_down", egresos, "#DC2626")
-
+# --- Evolución mensual ------------------------------------------------------
 with st.container(border=True, key="card-evolucion"):
-    st.markdown("**:material/insights: Evolución mensual**")
+    st.html(ui_html.titulo_seccion("Evolución mensual", "Ingresos y egresos reales de cada mes"))
     flujo = reports.flujo_mensual(diario)
     if flujo.empty:
         st.caption("Todavía no hay datos suficientes.")
     else:
-        for moneda in ("ARS", "USD"):
+        for moneda, nombre in (("ARS", "Pesos"), ("USD", "Dólares")):
             sub = flujo[flujo["moneda"] == moneda]
             if sub.empty:
                 continue
-            st.caption(f"En {moneda}")
+            st.caption(f"**{nombre}**")
             pivot = sub.pivot(index="periodo", columns="tipo", values="monto").fillna(0)
             colores = [c for c, tipo in zip(["#DC2626", "#16A34A"], ["egreso", "ingreso"]) if tipo in pivot.columns]
             st.bar_chart(pivot, color=colores)

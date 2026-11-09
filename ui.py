@@ -1,4 +1,6 @@
 """Helpers compartidos entre páginas: formato de números y acceso a datos."""
+import datetime as dt
+
 import pandas as pd
 
 import config_store
@@ -30,3 +32,18 @@ def fmt_df(df: pd.DataFrame, columnas: list) -> pd.DataFrame:
 
 def load_data():
     return config_store.load(), diario_store.load()
+
+
+def meses_disponibles(diario: list) -> list:
+    """Meses (año, mes) desde el primer movimiento hasta el actual, el más reciente primero."""
+    hoy = dt.date.today()
+    primero = min((e["fecha"][:7] for e in diario), default=hoy.strftime("%Y-%m"))
+    a, m = int(primero[:4]), int(primero[5:7])
+    meses = []
+    while (a, m) <= (hoy.year, hoy.month):
+        meses.append((a, m))
+        m += 1
+        if m == 13:
+            a, m = a + 1, 1
+    meses.reverse()
+    return meses

@@ -1,19 +1,21 @@
 """Diario: carga de movimientos y últimos registros."""
 import datetime as dt
 
-import pandas as pd
 import streamlit as st
 
 import diario_store
-from ui import fmt, load_data
+import ui_html
+from ui import load_data
 
 st.title("Diario")
-st.caption("Registrá cada movimiento apenas suceda")
+st.caption("Registrá cada movimiento apenas suceda.")
 
 config, diario = load_data()
 
-with st.container(border=True):
-    with st.form("nuevo_movimiento", clear_on_submit=True):
+# --- Nuevo movimiento -------------------------------------------------------
+with st.container(key="card-form"):
+    st.html(ui_html.titulo_seccion("Nuevo movimiento", "Completá los datos y cargalo al diario."))
+    with st.form("nuevo_movimiento", clear_on_submit=True, border=False):
         c1, c2, c3 = st.columns(3)
         fecha = c1.date_input("Fecha", value=dt.date.today())
         tipo = c2.selectbox("Tipo", ["egreso", "ingreso"])
@@ -42,29 +44,34 @@ with st.container(border=True):
                 st.toast("Movimiento cargado", icon=":material/check_circle:")
                 st.rerun()
 
-st.subheader("Últimos movimientos")
+# --- Últimos movimientos ----------------------------------------------------
 diario = diario_store.load()
-if diario:
-    df = pd.DataFrame(diario).sort_values(["fecha", "id"], ascending=[False, False])
-    df_view = df[["id", "fecha", "tipo", "concepto", "cuenta", "moneda", "monto", "nota"]].copy()
-    df_view["monto"] = df_view["monto"].apply(fmt)
-    df_view = df_view.rename(columns={
-        "id": "ID", "fecha": "Fecha", "tipo": "Tipo", "concepto": "Concepto",
-        "cuenta": "Cuenta", "moneda": "Moneda", "monto": "Monto", "nota": "Nota",
-    })
+with st.container(key="card-movs"):
+    c_titulo, c_buscar, c_cant = st.columns([2.4, 2.2, 1.2], vertical_alignment="center")
+    with c_buscar:
+        busqueda = st.text_input("Buscar", placeholder="Buscar concepto, cuenta o nota", icon=":material/search:", label_visibility="collapsed")
+    with c_cant:
+        cantidad = st.selectbox("Mostrar", ["25", "50", "100", "Todos"], label_visibility="collapsed")
 
-    def _color_tipo(row):
-        color = "#15803D" if row["Tipo"] == "ingreso" else "#B91C1C"
-        return [f"color: {color}"] * len(row)
+    filas = sorted(diario, key=lambda e: (e["fecha"], e["id"]), reverse=True)
+    if busqueda:
+        q = busqueda.lower()
+        filas = [e for e in filas if q in e["concepto"].lower() or q in e["cuenta"].lower() or q in (e.get("nota") or "").lower()]
+    total = len(filas)
+    if cantidad != "Todos":
+        filas = filas[: int(cantidad)]
 
-    styled = df_view.style.apply(_color_tipo, axis=1)
-    st.dataframe(styled, hide_index=True, width="stretch")
+    with c_titulo:
+        st.html(ui_html.titulo_seccion("Últimos movimientos", f"Mostrando {len(filas)} de {total}"))
 
-    with st.expander("Borrar un movimiento", icon=":material/delete:"):
-        id_borrar = st.number_input("ID a borrar", min_value=1, step=1)
-        if st.button("Borrar", icon=":material/delete_forever:"):
-            diario_store.delete(int(id_borrar))
-            st.toast("Movimiento borrado", icon=":material/check_circle:")
-            st.rerun()
-else:
-    st.info("Todavía no cargaste movimientos.", icon=":material/info:")
+    if not diario:
+        st.info("Todavía no cargaste movimientos.", icon=":material/info:")
+    else:
+        st.html(ui_html.tabla_movimientos(filas))
+
+        with st.expander("Borrar un movimiento", icon=":material/delete:"):
+            id_borrar = st.number_input("ID a borrar", min_value=1, step=1)
+            if st.button("Borrar", icon=":material/delete_forever:"):
+                diario_store.delete(int(id_borrar))
+                st.toast("Movimiento borrado", icon=":material/check_circle:")
+                st.rerun()

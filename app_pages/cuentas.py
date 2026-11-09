@@ -6,7 +6,7 @@ import streamlit as st
 
 import reports
 import ui_html
-from ui import MESES, load_data
+from ui import MESES, load_data, meses_disponibles
 
 config, diario = load_data()
 cuentas_inversion = config.get("cuentas_inversion", [])
@@ -20,16 +20,7 @@ def _etiqueta_mes(anio: int, mes: int) -> str:
     return f"{MESES[mes - 1]} {anio}"
 
 
-# Meses disponibles: desde el primer movimiento hasta el mes actual (el más reciente primero)
-primero = min((e["fecha"][:7] for e in diario), default=hoy.strftime("%Y-%m"))
-a, m = int(primero[:4]), int(primero[5:7])
-meses = []
-while (a, m) <= (hoy.year, hoy.month):
-    meses.append((a, m))
-    m += 1
-    if m == 13:
-        a, m = a + 1, 1
-meses.reverse()
+meses = meses_disponibles(diario)
 etiquetas = [_etiqueta_mes(*x) for x in meses]
 
 # --- Encabezado -------------------------------------------------------------
