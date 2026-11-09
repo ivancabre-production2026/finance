@@ -1,0 +1,154 @@
+/* Estilos propios de Finanzas personales (se cargan una vez desde app.py).
+   Los componentes del Resumen (tarjetas, tabla, barras) usan el prefijo .fp-
+   y las tarjetas con widgets de Streamlit se estilan por su key (.st-key-card-*). */
+
+:root {
+  --fp-bg: #F4F6F1;
+  --fp-card: #FFFFFF;
+  --fp-line: #E3E8DE;
+  --fp-ink: #12261B;
+  --fp-muted: #617066;
+  --fp-green: #0B5D3B;
+  --fp-green-soft: #A9D9B5;
+  --fp-shadow: 0 1px 2px rgba(18, 38, 27, .05), 0 6px 18px rgba(18, 38, 27, .05);
+}
+
+/* ---------- Página ---------- */
+[data-testid="stMainBlockContainer"] {
+  max-width: 1260px;
+  padding-top: 2.2rem;
+  padding-bottom: 4rem;
+}
+h1 { letter-spacing: -0.02em; margin-bottom: 0.1rem; }
+
+/* ---------- Sidebar ---------- */
+[data-testid="stSidebarHeader"] { height: auto; padding: 1.6rem 1rem 0.4rem; }
+[data-testid="stSidebarLogo"] { height: 64px; max-width: 100%; }
+[data-testid="stSidebarNav"] { padding-top: 0.5rem; }
+[data-testid="stSidebarNavLink"] {
+  min-height: 46px;
+  padding: 0 14px !important;
+  margin-bottom: 4px;
+  border-radius: 12px !important;
+  font-weight: 600;
+}
+[data-testid="stSidebarNavLink"][aria-current="page"] {
+  background: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* ---------- Tarjetas con widgets de Streamlit ---------- */
+[class*="st-key-card-"] {
+  background: var(--fp-card);
+  border: 1px solid var(--fp-line);
+  border-radius: 18px;
+  padding: 22px 26px;
+  box-shadow: var(--fp-shadow);
+}
+
+/* Barra de pendientes */
+.st-key-alerta {
+  background: #FFF1D6;
+  border: 1px solid #F1D79A;
+  border-radius: 14px;
+  padding: 10px 20px;
+}
+.st-key-alerta p { margin: 0; }
+.fp-alerta-nombres { color: #8A6A1F; font-size: 14px; margin-top: 2px; }
+
+/* Botón principal */
+.st-key-btn-nuevo button {
+  border-radius: 12px;
+  min-height: 48px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(11, 93, 59, .25);
+}
+
+/* ---------- Tarjetas de patrimonio ---------- */
+.fp-hero {
+  background: var(--fp-card);
+  border: 1px solid var(--fp-line);
+  border-radius: 18px;
+  padding: 24px 28px;
+  box-shadow: var(--fp-shadow);
+  height: 100%;
+}
+.fp-hero-top { display: flex; align-items: center; gap: 18px; }
+.fp-ico {
+  width: 66px; height: 66px; flex: none;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.fp-ico span {
+  font-family: "Material Symbols Rounded";
+  font-size: 36px; line-height: 1; font-weight: 400;
+  font-variation-settings: 'FILL' 0, 'wght' 400;
+}
+.fp-ico.ars { background: #E2ECFB; color: #1D4ED8; }
+.fp-ico.usd { background: #E1F1E7; color: #0B5D3B; }
+.fp-hero-label { font-size: 17px; color: var(--fp-muted); font-weight: 500; }
+.fp-hero { container-type: inline-size; }
+.fp-hero-value {
+  font-size: clamp(26px, 7.2cqw, 42px); font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.025em; color: var(--fp-ink); white-space: nowrap;
+}
+.fp-delta { font-size: 14px; font-weight: 600; margin-top: 6px; color: var(--fp-muted); }
+.fp-delta b { font-weight: 700; }
+.fp-delta .up { color: #15803D; }
+.fp-delta .down { color: #DC2626; }
+.fp-sep { height: 1px; background: var(--fp-line); margin: 20px 0 18px; }
+.fp-split { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0 26px; }
+.fp-vsep { background: var(--fp-line); }
+.fp-k { font-size: 16px; color: var(--fp-muted); }
+.fp-v {
+  font-size: clamp(17px, 4.3cqw, 27px); font-weight: 700; margin-top: 2px;
+  letter-spacing: -0.015em; white-space: nowrap;
+}
+
+/* ---------- Títulos de sección ---------- */
+.fp-sec-title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: var(--fp-ink); }
+.fp-sec-sub { font-size: 16px; color: var(--fp-muted); margin-top: 2px; }
+
+/* ---------- Tabla Mis cuentas ---------- */
+.fp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 17px; margin-top: 8px; }
+.fp-table th {
+  background: #EEF3EC; color: #2F4237; font-weight: 700; font-size: 16px;
+  text-align: left; padding: 13px 18px;
+}
+.fp-table th:first-child { border-radius: 12px 0 0 12px; }
+.fp-table th:last-child { border-radius: 0 12px 12px 0; }
+.fp-table td { padding: 15px 18px; border-bottom: 1px solid #EEF1EB; color: var(--fp-ink); }
+.fp-table tr:last-child td { border-bottom: none; }
+.fp-table .r { text-align: right; font-variant-numeric: tabular-nums; }
+.fp-table .tot { font-weight: 800; }
+.fp-table .zero { color: #A5AFA8; }
+.fp-acc { display: flex; align-items: center; gap: 14px; font-weight: 700; }
+.fp-av {
+  width: 40px; height: 40px; border-radius: 50%; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 17px;
+}
+.fp-pill {
+  display: inline-block; padding: 5px 16px; border-radius: 999px;
+  font-weight: 700; font-size: 14px; letter-spacing: .02em;
+}
+.fp-pill.ars { background: #DBE8FC; color: #1E40AF; }
+.fp-pill.usd { background: #D6EFDD; color: #14603A; }
+.fp-vacio { color: var(--fp-muted); padding: 18px 4px; }
+
+/* ---------- Distribución ---------- */
+.fp-dist-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.fp-legend { display: flex; gap: 20px; font-size: 15px; color: var(--fp-muted); }
+.fp-legend i { display: inline-block; width: 15px; height: 15px; border-radius: 5px; margin-right: 8px; vertical-align: -2px; }
+.fp-dist-row { display: grid; grid-template-columns: minmax(150px, 250px) 1fr; align-items: center; gap: 22px; margin: 20px 0 6px; }
+.fp-dist-name b { display: block; font-size: 21px; font-weight: 800; }
+.fp-dist-name span { color: var(--fp-muted); font-size: 16px; }
+.fp-bar { display: flex; height: 46px; border-radius: 14px; overflow: hidden; background: #EEF3EC; }
+.fp-seg { display: flex; align-items: center; padding: 0 16px; font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; }
+.fp-seg.disp { background: var(--fp-green-soft); color: #0B3D2B; }
+.fp-seg.inv { background: var(--fp-green); color: #FFFFFF; justify-content: flex-end; flex: 1; }
+
+@media (max-width: 900px) {
+  .fp-dist-row { grid-template-columns: 1fr; gap: 8px; }
+  .fp-table { font-size: 15px; }
+  .fp-table th, .fp-table td { padding: 11px 10px; }
+}

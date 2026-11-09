@@ -16,7 +16,9 @@ def is_configured() -> bool:
 
 
 def _conn():
-    return st.connection("postgres", type="sql")
+    # Neon corta las conexiones inactivas: pre_ping prueba la conexión antes de usarla
+    # (y la renueva si está muerta) y recycle evita reutilizar conexiones muy viejas.
+    return st.connection("postgres", type="sql", pool_pre_ping=True, pool_recycle=300)
 
 
 def _ensure_table():

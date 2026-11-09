@@ -5,6 +5,8 @@ Uso:
     cd finanzas-personales
     streamlit run app.py
 """
+from pathlib import Path
+
 import streamlit as st
 
 from auth import check_password
@@ -19,6 +21,7 @@ if not check_password():
     st.stop()
 
 st.logo("assets/logo.svg", size="large", icon_image="assets/logo_icon.svg")
+st.html(Path(__file__).parent / "assets" / "style.css")  # estilos propios (tarjetas, tabla, barras)
 
 page = st.navigation(
     [

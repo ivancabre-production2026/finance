@@ -28,13 +28,13 @@ total_egr_usd = egresos["USD"].sum() if not egresos.empty else 0.0
 
 col_ars, col_usd = st.columns(2)
 with col_ars:
-    with st.container(border=True):
+    with st.container(border=True, key="card-pesos"):
         st.caption(":blue[**● Pesos (ARS)**]")
         with st.container(horizontal=True):
             st.metric(":material/trending_up: Ingresos", f"$ {fmt(total_ing_ars)}")
             st.metric(":material/trending_down: Egresos", f"$ {fmt(total_egr_ars)}")
 with col_usd:
-    with st.container(border=True):
+    with st.container(border=True, key="card-dolares"):
         st.caption(":green[**● Dólares (USD)**]")
         with st.container(horizontal=True):
             st.metric(":material/trending_up: Ingresos", f"US$ {fmt(total_ing_usd)}")
@@ -49,7 +49,7 @@ def _color_estado(row):
 
 
 def _tarjeta_pendientes(titulo: str, conceptos: list, tipo: str, verbo: str):
-    with st.container(border=True):
+    with st.container(border=True, key=f"card-pend-{tipo}"):
         st.markdown(f"**:material/notifications_active: {titulo}**")
         if not conceptos:
             st.caption("No configuraste ninguno todavía (se hace desde Config).")
@@ -78,7 +78,7 @@ with col_egr_fijos:
 
 
 def _seccion(titulo: str, icono: str, df, color: str):
-    with st.container(border=True):
+    with st.container(border=True, key=f"card-sec-{icono}"):
         st.markdown(f"**:material/{icono}: {titulo}**")
         if df.empty:
             st.caption(f"Sin {titulo.lower()} este mes.")
@@ -98,7 +98,7 @@ def _seccion(titulo: str, icono: str, df, color: str):
 _seccion("Ingresos por concepto", "trending_up", ingresos, "#16A34A")
 _seccion("Egresos por concepto", "trending_down", egresos, "#DC2626")
 
-with st.container(border=True):
+with st.container(border=True, key="card-evolucion"):
     st.markdown("**:material/insights: Evolución mensual**")
     flujo = reports.flujo_mensual(diario)
     if flujo.empty:
