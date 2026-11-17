@@ -29,6 +29,7 @@ page = st.navigation(
         st.Page("app_pages/cuentas.py", title="Resumen", icon=":material/home:", default=True),
         st.Page("app_pages/movimientos.py", title="Movimientos", icon=":material/swap_horiz:"),
         st.Page("app_pages/diario.py", title="Diario", icon=":material/edit_calendar:"),
+        st.Page("app_pages/diezmo.py", title="Diezmo", icon=":material/volunteer_activism:"),
         st.Page("app_pages/asistente.py", title="Asistente", icon=":material/auto_awesome:"),
         st.Page("app_pages/config.py", title="Configuración", icon=":material/settings:"),
     ],

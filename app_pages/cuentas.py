@@ -4,9 +4,10 @@ import datetime as dt
 
 import streamlit as st
 
+import diezmo_calc
 import reports
 import ui_html
-from ui import MESES, load_data, meses_disponibles
+from ui import MESES, fmt_money, load_data, meses_disponibles
 
 config, diario = load_data()
 cuentas_inversion = config.get("cuentas_inversion", [])
@@ -99,6 +100,21 @@ for col, (moneda, nombre) in zip(st.columns(2), MONEDAS):
     delta = total - totales(moneda, hasta_ant)[2] if hasta_ant else None
     with col:
         st.html(ui_html.hero(moneda, nombre, total, disp, inv, delta))
+
+# --- Diezmo -------------------------------------------------------------------
+est_diezmo = diezmo_calc.estado(diario, config["diezmo"])
+with st.container(key="card-diezmo-resumen"):
+    c_info, c_link = st.columns([5, 1.1], vertical_alignment="center")
+    with c_info:
+        en_curso = est_diezmo["en_curso"]
+        detalle = f"Meses cerrados pendientes de pago · {ui_html._nombre_mes(en_curso['periodo'])} estimado: {fmt_money(en_curso['diezmo'], 'ARS')}" if en_curso else "Meses cerrados pendientes de pago"
+        st.html(ui_html.kpi_diezmo(
+            "Deuda de diezmo", fmt_money(max(est_diezmo["deuda"], 0.0), "ARS"),
+            "Al día" if est_diezmo["deuda"] <= 0.5 else detalle,
+            negativo=est_diezmo["deuda"] > 0.5, plano=True,
+        ))
+    with c_link:
+        st.page_link("app_pages/diezmo.py", label="Ver detalle", icon=":material/arrow_forward:")
 
 # --- Mis cuentas ------------------------------------------------------------
 base = saldos.copy()

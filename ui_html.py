@@ -255,3 +255,81 @@ def lista_distribucion(items: list, moneda: str) -> str:
             "</div>"
         )
     return '<div class="fp-dist-lista">' + "".join(filas) + "</div>"
+
+
+# --------------------------------------------------------------------- Diezmo
+def kpi_diezmo(titulo: str, valor: str, subtitulo: str = "", icono: str = "volunteer_activism", clase: str = "usd", negativo: bool = False, plano: bool = False) -> str:
+    sub = f'<div class="fp-delta">{escape(subtitulo)}</div>' if subtitulo else ""
+    color = " neg" if negativo else ""
+    marco = "fp-hero fp-kpi-sm fp-plano" if plano else "fp-hero fp-kpi-sm"
+    return f"""
+<div class="{marco}">
+  <div class="fp-hero-top">
+    <div class="fp-ico {clase}"><span>{icono}</span></div>
+    <div>
+      <div class="fp-hero-label">{escape(titulo)}</div>
+      <div class="fp-hero-value{color}">{escape(valor)}</div>
+      {sub}
+    </div>
+  </div>
+</div>
+"""
+
+
+def _nombre_mes(periodo: str) -> str:
+    meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    return f"{meses[int(periodo[5:7]) - 1]} {periodo[:4]}"
+
+
+def tabla_diezmo(filas: list) -> str:
+    pills = {"Confirmado": "ok", "Calculado": "ok", "Estimado": "pend", "Manual": "info"}
+    trs = []
+    for f in filas:
+        ing = []
+        if f["usd"]:
+            ing.append(escape(fmt_money(f["usd"], "USD")))
+        if f["ars"]:
+            ing.append(escape(fmt_money(f["ars"], "ARS")))
+        ingresos = "<br>".join(ing) if ing else "—"
+        tc = escape(fmt_money(f["tc"], "ARS")) if f["tc"] else "—"
+        pend = f["pendiente"]
+        pendiente = (
+            f'<td class="r tot neg nw">{escape(fmt_money(pend, "ARS"))}</td>' if pend > 0.5
+            else '<td class="r tot pos nw">Al día</td>'
+        )
+        trs.append(
+            "<tr>"
+            f'<td class="b nw">{escape(_nombre_mes(f["periodo"]))}</td>'
+            f'<td class="r nw">{ingresos}</td>'
+            f'<td class="r nw">{tc}</td>'
+            f'<td class="r nw">{escape(fmt_money(f["diezmo"], "ARS"))}</td>'
+            f'<td class="r nw">{escape(fmt_money(f["pagado"], "ARS"))}</td>'
+            f"{pendiente}"
+            f'<td><span class="fp-pill {pills.get(f["origen"], "ok")}">{escape(f["origen"])}</span></td>'
+            "</tr>"
+        )
+    return (
+        '<div class="fp-scroll"><table class="fp-table fp-compact"><thead><tr>'
+        '<th>Mes</th><th class="r">Ingresos</th><th class="r">TC fin de mes</th><th class="r">Diezmo</th>'
+        '<th class="r">Pagado</th><th class="r">Pendiente</th><th>Origen</th>'
+        "</tr></thead><tbody>" + "".join(trs) + "</tbody></table></div>"
+    )
+
+
+def tabla_pagos_diezmo(pagos: list) -> str:
+    trs = []
+    for p in pagos:
+        f = p["fecha"]
+        eq = escape(fmt_money(p["ars_eq"], "ARS"))
+        if p["moneda"] == "USD":
+            monto = escape(fmt_money(p["monto"], "USD")) + (f"<br><small>≈ {eq}</small>" if p["ars_eq"] else "")
+        else:
+            monto = eq
+        trs.append(
+            f'<tr><td class="muted nw">{f[8:10]}/{f[5:7]}/{f[:4]}</td><td>{escape(p["cuenta"])}</td>'
+            f'<td class="r tot">{monto}</td><td class="muted nota"><div>{escape(p["nota"])}</div></td></tr>'
+        )
+    return (
+        '<div class="fp-scroll"><table class="fp-table"><thead><tr><th>Fecha</th><th>Cuenta</th><th class="r">Monto</th><th>Nota</th></tr></thead>'
+        "<tbody>" + "".join(trs) + "</tbody></table></div>"
+    )

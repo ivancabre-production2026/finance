@@ -65,6 +65,7 @@ if st.button("Guardar config", type="primary", icon=":material/save:"):
     egresos_lista = [l.strip() for l in egresos_txt.splitlines() if l.strip()]
     cuentas_lista = [l.strip() for l in cuentas_txt.splitlines() if l.strip()]
     nuevo_config = {
+        **config,  # conserva claves que esta pantalla no edita (ej. diezmo)
         "ingresos": ingresos_lista,
         "egresos": egresos_lista,
         "cuentas": cuentas_lista,

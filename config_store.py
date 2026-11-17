@@ -101,6 +101,21 @@ _SEED = {
 }
 
 
+DIEZMO_DEFAULT = {
+    "porcentaje": 10.0,
+    # Conceptos de ingreso sobre los que se calcula el diezmo.
+    "conceptos": ["Ingreso ilatin/Iron Rod", "Ingreso Pretzel", "Ingreso Jaime", "Ingreso Alquiler Frías"],
+    # Diezmo adeudado por mes, tal como figuraba al 17/11/2026 (ARS).
+    "deuda_inicial": {"2026-07": 848000.0, "2026-08": 877120.0, "2026-09": 840800.0, "2026-10": 873920.0},
+    # Fecha desde la cual los pagos con concepto Diezmo reducen esa deuda.
+    "corte": "2026-11-17",
+    # Tipo de cambio de fin de mes ingresado a mano, {"2026-11": 1650.0}. Si falta, se estima.
+    "tc": {},
+    # Monto del diezmo de un mes ingresado a mano (pisa el calculo), {"2026-11": 780000.0}.
+    "manual": {},
+}
+
+
 def _load_raw() -> dict:
     if db.is_configured():
         return db.load("config", _SEED)
@@ -122,6 +137,12 @@ def load() -> dict:
     if "cuentas_inversion" not in config:
         config["cuentas_inversion"] = [c for c in _SEED["cuentas_inversion"] if c in config.get("cuentas", [])]
         dirty = True
+    # Diezmo: deuda al 17/11/2026 (jul-oct) y reglas de calculo. Los pagos desde el corte la reducen.
+    diezmo = config.setdefault("diezmo", {})
+    for clave, valor in DIEZMO_DEFAULT.items():
+        if clave not in diezmo:
+            diezmo[clave] = json.loads(json.dumps(valor))
+            dirty = True
     if dirty:
         save(config)
     return config
