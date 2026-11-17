@@ -104,7 +104,7 @@ _SEED = {
 DIEZMO_DEFAULT = {
     "porcentaje": 10.0,
     # Conceptos de ingreso sobre los que se calcula el diezmo.
-    "conceptos": ["Ingreso ilatin/Iron Rod", "Ingreso Pretzel", "Ingreso Jaime", "Ingreso Alquiler Frías"],
+    "conceptos": ["Ingreso ilatin/Iron Rod", "Ingreso Pretzel", "Ingreso Jaime"],
     # Diezmo adeudado por mes, tal como figuraba al 17/11/2026 (ARS).
     "deuda_inicial": {"2026-07": 848000.0, "2026-08": 877120.0, "2026-09": 840800.0, "2026-10": 873920.0},
     # Fecha desde la cual los pagos con concepto Diezmo reducen esa deuda.
