@@ -238,3 +238,20 @@ def tabla_movimientos(rows: list) -> str:
         '<th>Fecha</th><th>Concepto</th><th>Cuenta</th><th>Tipo</th><th class="r">Monto</th><th>Nota</th><th class="r">ID</th>'
         "</tr></thead><tbody>" + "".join(trs) + "</tbody></table></div>"
     )
+
+
+def lista_distribucion(items: list, moneda: str) -> str:
+    """items: lista de (concepto, monto, porcentaje, color). Acompaña al gráfico de torta."""
+    if not items:
+        return '<div class="fp-vacio">Sin gastos en este mes.</div>'
+    filas = []
+    for concepto, monto, pct, color in items:
+        filas.append(
+            '<div class="fp-dist-item">'
+            f'<span class="fp-dot" style="background:{color}"></span>'
+            f'<span class="fp-dist-concepto">{escape(concepto)}</span>'
+            f'<span class="fp-dist-pct">{pct:.1f}%</span>'
+            f'<span class="fp-dist-monto">{escape(fmt_money(monto, moneda))}</span>'
+            "</div>"
+        )
+    return '<div class="fp-dist-lista">' + "".join(filas) + "</div>"

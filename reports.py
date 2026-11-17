@@ -102,9 +102,14 @@ def patrimonio_evolucion(entries: list, moneda: str) -> list[float]:
     return por_mes.cumsum().tolist()
 
 
-def flujo_mensual(entries: list) -> pd.DataFrame:
-    """Ingresos vs egresos reales totales por mes y moneda (sin saldo inicial), para ver la evolución."""
+def flujo_mensual(entries: list, excluir_conceptos: tuple = ()) -> pd.DataFrame:
+    """Ingresos vs egresos reales totales por mes y moneda (sin saldo inicial), para ver la evolución.
+    excluir_conceptos permite dejar afuera rubros que no son gasto real (ej. 'Cambio USD a ARS')."""
     df = _sin_saldo_inicial(_df(entries))
+    if df.empty:
+        return pd.DataFrame(columns=["periodo", "moneda", "tipo", "monto"])
+    if excluir_conceptos:
+        df = df[~df["concepto"].isin(excluir_conceptos)]
     if df.empty:
         return pd.DataFrame(columns=["periodo", "moneda", "tipo", "monto"])
     df["periodo"] = df["fecha"].dt.to_period("M").astype(str)
